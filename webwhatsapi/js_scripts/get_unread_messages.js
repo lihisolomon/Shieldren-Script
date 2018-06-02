@@ -3,7 +3,7 @@ var Output = [];
 
 function isChatMessage(message) {
     if (message.__x_isSentByMe) {
-		message.__x_body+=" -_x_isSentByMe";
+	message.__x_body+=" -_x_isSentByMe";
     }
     if (message.__x_isNotification) {
         return false;
