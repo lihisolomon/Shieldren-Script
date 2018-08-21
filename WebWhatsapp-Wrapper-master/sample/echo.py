@@ -21,47 +21,59 @@ def getUnreadMessagers(sessionID,myPhone):
 	try:
 	    while True:
 		time.sleep(3)
-		for contact in driver.get_unread():
-		    for message in contact.messages:
-			paramTime = time.strftime("%Y-%m-%d %H:%M:%S")
-			contactNumber = message.sender.id
-			if "@g.us" in message.chat_id:
-		            isGroup = True
-			    ContactName = contact.chat.name
-		        else:
-		            isGroup = False
-			    ContactName = contact.chat.id
-			phoneNumber = contactNumber[0:12]
-			Message = message.content
-			#print("Phone:" + message.sender.id + "|Message Type: " + message.type + " chat is : "+ message.chat_id)
-			#print("MyPhone:" + myPhone + " phonenumber: " + phoneNumber + " contactNumber : "+ ContactName)
-			if (phoneNumber == myPhone and isGroup == False):
-				caller = myPhone
-				callee = ContactName[0:12]
-			elif (phoneNumber == myPhone and isGroup == True):
-				caller = myPhone
-				callee = ContactName
-			elif (isGroup == True):
-				caller = phoneNumber
-				callee = ContactName
-			else:
-				caller = phoneNumber
-				callee = myPhone
+		#print (driver.get_status())
+		if (driver.get_status() == 'LoggedIn'):
+			for contact in driver.get_unread():
+		   		for message in contact.messages:
+					if (message.type == "chat"):
+						paramTime = time.strftime("%Y-%m-%d %H:%M:%S")
+						contactNumber = message.sender.id
+						if "@g.us" in message.chat_id:
+				   	 		isGroup = True
+				    			ContactName = contact.chat.name
+						else:
+				    			isGroup = False
+				   			ContactName = contact.chat.id
+						phoneNumber = contactNumber[0:12]
+						Message = message.content
+				#print("Phone:" + message.sender.id + "|Message Type: " + message.type + " chat is : "+ message.chat_id)
+				#print("MyPhone:" + myPhone + " phonenumber: " + phoneNumber + " contactNumber : "+ ContactName)
+						if (phoneNumber == myPhone and isGroup == False):
+							caller = myPhone
+							callee = ContactName[0:12]
+						elif (phoneNumber == myPhone and isGroup == True):
+							caller = myPhone
+							callee = ContactName
+						elif (isGroup == True):
+							caller = phoneNumber
+							callee = ContactName
+						else:
+							caller = phoneNumber
+							callee = myPhone
+						data = {
+				        		"sessionID": sessionID,
+				       	     		"code": 3,
+				           		"message": "userMessage",
+				            		"data": {
+				                # did the the action
+				                		"caller": caller,
+				                # send to
+				                	"callee": callee,
+				                	"timestamp": paramTime,
+				                	"message": Message,
+				                	"group": isGroup
+				            			}
+				        		}
+						printJson(data)
+		else:
 			data = {
-		                    "sessionID": sessionID,
-		                    "code": 3,
-		                    "message": "userMessage",
-		                    "data": {
-		                        # did the the action
-		                        "caller": caller,
-		                        # send to
-		                        "callee": callee,
-		                        "timestamp": paramTime,
-		                        "message": Message,
-		                        "group": isGroup
-		                    }
-		                }
+				"sessionID":sessionID,
+				"code": -1,
+				"message": "session was closed.",
+				"data": "null"
+			}
 			printJson(data)
+			sys.exit()
 	except:
 		e = sys.exc_info()[0]
 		data = {
@@ -71,12 +83,15 @@ def getUnreadMessagers(sessionID,myPhone):
 			"data": "null"
 		}
 		printJson(data)
-			
+#		print sys.exc_info()
+
 
 # set unicode
 reload(sys)
 sys.setdefaultencoding('Windows-1255')
+
 sessionID = random_with_N_digits(10)
+
 data = {
     "sessionID": sessionID,
     "code": 5,
@@ -99,6 +114,7 @@ except:
     sys.exit()
 
 driver = WhatsAPIDriver(username="mkhase", loadstyles=True)
+
 #print("Waiting for QR")
 #QR Code
 driver.get_qr(sessionID)
@@ -120,6 +136,8 @@ except:
     }
     printJson(data)
     sys.exit()
+
+#driver.get_my_contacts()
 getUnreadMessagers(sessionID,myPhone)
 
 
