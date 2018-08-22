@@ -72,7 +72,7 @@ def getUnreadMessagers(sessionID,myPhone):
 				"message": "session was closed.",
 				"data": "null"
 			}
-			printJson(data)
+			#printJson(data)
 			sys.exit()
 	except:
 		e = sys.exc_info()[0]
