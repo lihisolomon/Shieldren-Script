@@ -68,7 +68,7 @@ def getUnreadMessagers(sessionID,myPhone):
 		else:
 			data = {
 				"sessionID":sessionID,
-				"code": -1,
+				"code": 0,
 				"message": "session was closed.",
 				"data": "null"
 			}
